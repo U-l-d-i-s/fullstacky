@@ -1,4 +1,5 @@
 // src/pages/_app.tsx
+import { ProvideUserAccount } from "@/utils/hooks/useUserAccount/useUserAcciunt";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
@@ -14,7 +15,9 @@ const MyApp: AppType = ({
 }) => {
   return(
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <ProvideUserAccount>
+        <Component {...pageProps} />
+      </ProvideUserAccount>
     </SessionProvider>
   ) 
 };

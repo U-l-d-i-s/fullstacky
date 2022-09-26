@@ -1,4 +1,5 @@
 import SingleInputField from '@/components/InputComponents/SingleInputField/SingleInputField';
+import { useUserAccount } from '@/utils/hooks/useUserAccount/useUserAcciunt';
 import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import {useForm, SubmitHandler} from 'react-hook-form'
@@ -14,6 +15,8 @@ type PersonalSettingsInputValues = {
 
 const PersonalSettings = () => {
     const { data: session, status } = useSession();
+    const {refreshUserAccount, userData} = useUserAccount();
+
     const addUser = trpc.useQuery(["user.getUser", {name: session?.user?.name!}]);
     console.log(addUser.data);
 
