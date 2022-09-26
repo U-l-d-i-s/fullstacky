@@ -1,0 +1,22 @@
+.menuDropDown {
+    height: auto;
+    width: 200px;
+
+    position: absolute;
+    top: 40px;
+    right: -20px;
+    display: flex;
+    flex-direction: column;
+
+    background-color: azure;
+    border-radius: 7px;
+    border:2px solid rgba(126, 121, 121, 0.4);
+
+    padding: 10px;
+}
+
+
+.horizontalLine{
+    margin-top: 7px;
+    margin-bottom: 7px;
+}

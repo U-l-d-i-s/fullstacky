@@ -1,0 +1,44 @@
+.container{
+    width: 100%;
+    height: 45px;
+    position: static;
+    background-color: rgb(247, 245, 245);
+}
+
+.innerContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 80%;
+    height: 100%;
+
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.innerContainer p {
+    font-size: 20px;
+    color: black;
+}
+
+.circle {
+    background-color: rgb(126, 121, 121);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    opacity: 0.8;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+}
