@@ -1,6 +1,6 @@
-.container{
-    max-width: 50%;
-    
+.container {
+    max-width: 85%;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8,7 +8,27 @@
 
     margin: auto;
     padding-top: 50px;
+
+    text-align: left;
 }
+
+.container h1 {
+    align-self: left;
+    margin-left: 0;
+}
+
 .innerContainer{
     width: 100%;
 }
+
+.row {
+    width: 50%;
+    min-width: 280px;
+
+    padding: 17px;
+
+    float: left;
+    justify-content: center;
+    align-items: center;
+}
+

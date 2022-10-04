@@ -21,8 +21,6 @@ const AfterLogin = () => {
                 image: session?.user?.image,
                 name: session?.user?.name,
             });
-            // AddPersonalDetails.mutate({name: session?.user?.name, address: '', city: '', postal: '', country: ''})
-
         }
 
     }, [session, status])

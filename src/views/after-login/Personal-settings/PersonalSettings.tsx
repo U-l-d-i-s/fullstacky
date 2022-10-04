@@ -1,5 +1,7 @@
+import HorizontalBreakLine from '@/components/HorizontalBreakLine/HorizontalBreakLine';
 import ReadOnlyTextInput from '@/components/InputComponents/ReadOnlyTextInput/ReadOnlyTextInput';
 import SingleInputField from '@/components/InputComponents/SingleInputField/SingleInputField';
+import SubmitButton from '@/components/InputComponents/SubmitButton/SubmitButton';
 
 import { useUserAccount } from '@/utils/hooks/useUserAccount/useUserAcciunt';
 import { trpc } from '@/utils/trpc';
@@ -19,84 +21,106 @@ type PersonalSettingsInputValues = {
 
 const PersonalSettings = () => {
     const { refreshUserAccount, userData } = useUserAccount();
-
     const { data: session, status } = useSession();
-    const addUser = trpc.useQuery(["user.getUser", { name: session?.user?.name! }]);
+    const addUser = trpc.useQuery(["user.getUser", { name: session?.user?.name! }], { refetchOnWindowFocus: false });
+    const updatePersonalDetails = trpc.useMutation(["personal.updatePersonalDetails"]);
 
-    // const {
-    //     formState,
-    //     control,
-    //     reset,
-    //     handleSubmit
-    // } = useForm<PersonalSettingsInputValues>({
-    //     mode: 'onChange',
-    //     defaultValues: {
-    //         address: addUser.data?.responseData?.personal?.address || '',
-    //         city: addUser.data?.responseData?.personal?.city || '',
-    //         country: addUser.data?.responseData?.personal?.country || '',
-    //         postal: addUser.data?.responseData?.personal?.postal || '',
-    //     }
-    // });
+    const {
+        formState,
+        control,
+        reset,
+        handleSubmit
+    } = useForm<PersonalSettingsInputValues>({
+        mode: 'onChange',
+        defaultValues: {
+            address: addUser.data?.responseData?.personal?.address || '',
+            city: addUser.data?.responseData?.personal?.city || '',
+            country: addUser.data?.responseData?.personal?.country || '',
+            postal: addUser.data?.responseData?.personal?.postal || '',
+        }
+    });
 
-    // useEffect(() => {
-    //     console.log(addUser.isSuccess);
-    //     reset({
-    //         address: addUser.data?.responseData?.personal?.address || '',
-    //         city: addUser.data?.responseData?.personal?.city || '',
-    //         country: addUser.data?.responseData?.personal?.country || '',
-    //         postal: addUser.data?.responseData?.personal?.postal || '',
-    //     });
-    // }, [addUser.isSuccess]);
+    useEffect(() => {
+        console.log(addUser.isSuccess);
+        reset({
+            address: addUser.data?.responseData?.personal?.address || '',
+            city: addUser.data?.responseData?.personal?.city || '',
+            country: addUser.data?.responseData?.personal?.country || '',
+            postal: addUser.data?.responseData?.personal?.postal || '',
+        });
+    }, [addUser.isSuccess]);
 
-    // const onSubmit: SubmitHandler<PersonalSettingsInputValues> = async (data, event) => {
-    //     event?.preventDefault();
-    // };
+    const onSubmit: SubmitHandler<PersonalSettingsInputValues> = async (data, event) => {
+        event?.preventDefault();
+        console.log('submit fired');
+
+        const {
+            address,
+            city,
+            country,
+            postal,
+        } = data;
+
+        updatePersonalDetails.mutate({
+            name: session?.user?.name!,
+            address: address || '',
+            city: city || '',
+            country: country || '',
+            postal: postal || '',
+        });
+    };
 
     if (addUser.isFetching) {
         return <h1>Spinning loader</h1>
     }
-    return (
+    return (    
         <div className={styles.container}>
+            {/* align left */}
+            <h1>Personal Settings</h1>
             <div className={styles.innerContainer}>
-                <ReadOnlyTextInput
-                    defaultValue={session?.user?.name || ''}
-                    title="User Name"
-                />
                 <form
-                    // onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(onSubmit)}
                     className={styles.formContainer}
                 >
+                    <div className={styles.row}>
+                        <ReadOnlyTextInput
+                            defaultValue={addUser.data?.responseData?.email || ''}
+                            title="E-Mail"
+                        />
+                        <ReadOnlyTextInput
+                            defaultValue={session?.user?.name || ''}
+                            title="User Name"
+                        />
+                    </div>
 
-                    <div className={styles.formContainer}>
+                    <div className={styles.row}>
                         <SingleInputField<PersonalSettingsInputValues>
                             name="address"
-                            // control={control}
+                            control={control}
                             title="Address"
                         />
                         <SingleInputField<PersonalSettingsInputValues>
                             name="city"
-                            // control={control}
+                            control={control}
                             title="City"
                         />
                     </div>
-                    <div className={styles.formContainer}>
+
+                    <div className={styles.row}>
                         <SingleInputField<PersonalSettingsInputValues>
                             name="country"
-                            // control={control}
+                            control={control}
                             title="Country"
                         />
                         <SingleInputField<PersonalSettingsInputValues>
                             name="postal"
-                            // control={control}
+                            control={control}
                             title="E-Mail"
                         />
                     </div>
 
+                    <SubmitButton />
                 </form>
-                <ReadOnlyTextInput
-                    defaultValue={addUser.data?.responseData?.email || ''}
-                    title="E-Mail"
-                />
             </div>
         </div>
     );

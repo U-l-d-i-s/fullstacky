@@ -71,55 +71,17 @@ export const userRouter = createRouter()
           if (addUser) {
             return {
               response: 200,
+              message: 'User Added To DataBase'
             };
           }
         }
         return {
           response: 400,
+          message: 'Existing User Found'
         };
       } catch (error) {
         throw new Error('something went wrong while query/mutation')
       }
     }
-  })
-  .mutation("AddPersonalDetails", {
-    input: z
-      .object({
-        name: z.string(),
-        address: z.string(),
-        city: z.string(),
-        postal: z.string(),
-        country: z.string(),
-      }),
-    async resolve({ ctx, input }) {
-      try {
-        const addUserPersonalData = await ctx.prisma.personal.update({
-          where: {
-            userName: input.name,
-          },
-          data: {
-            userName: input.name,
-            address: input.address,
-            city: input.city,
-            country: input.country,
-            postal: input.postal,
-          },
-        });
-
-        if (!addUserPersonalData) {
-          return {
-            response: 400,
-            data: addUserPersonalData,
-            message: 'personal Details failed to change'
-          };
-        }
-        return {
-          response: 200,
-          data: addUserPersonalData,
-          message: 'personal details changed'
-        };
-      } catch (error) {
-        throw new Error('something went wrong while query/mutation')
-      }
-    }
-  })
+  });
+ 
