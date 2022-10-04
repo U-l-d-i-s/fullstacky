@@ -112,11 +112,6 @@ const PersonalSettings = () => {
                             control={control}
                             title="Country"
                         />
-                        <SingleInputField<PersonalSettingsInputValues>
-                            name="postal"
-                            control={control}
-                            title="E-Mail"
-                        />
                     </div>
 
                     <SubmitButton />
