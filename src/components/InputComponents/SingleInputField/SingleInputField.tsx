@@ -5,6 +5,7 @@ import {
     PathValue
 } from "react-hook-form";
 import InputFieldBase, { type ControlledInputFieldProps } from "../InputFieldBase/InputFieldBase";
+import styles from './SingleInputField.module.css';
 
 const SingleInputField = <TFieldValues extends FieldValues = FieldValues>(
     {
@@ -31,8 +32,6 @@ const SingleInputField = <TFieldValues extends FieldValues = FieldValues>(
         rules,
     });
 
-    console.log(defaultValue);
-
     return (
         <InputFieldBase title={title} >
             <div>
@@ -44,6 +43,7 @@ const SingleInputField = <TFieldValues extends FieldValues = FieldValues>(
                     ref={ref}
                     onChange={onChange}
                     placeholder={placeholder}
+                    className={styles.input}
                 />
             </div>
         </InputFieldBase>
