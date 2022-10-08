@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { number } from 'zod';
+import { useEffect, useMemo, useState } from 'react';
+import { array, number } from 'zod';
 import styles from './Calendar.module.css';
 
 type ObjectMonthType = {
@@ -92,13 +92,11 @@ const Calendar = ({ isOpen }: CalendarType) => {
     // Number() also gets rid of starting zeros
     const getDayNumber: number = Number(getDate.toString().slice(8, 10));
 
-    // const prevMontDayCount = MonthStringTransl
-
     const [date, setDate] = useState<CalendarValuesType>({
         weekDay: getDate.getDay(),
         getDayNumber: getDayNumber,
         monthNumber: getDate.getMonth(),
-        dayString: DayStringTransl[getStringDay] || 'day...',
+        dayString: DayStringTransl[getStringDay] || '',
         monthString: MonthData[getStringMonth]?.name || '',
         year: getDate.getFullYear(),
         firstDayOfMonth: null,
@@ -107,19 +105,13 @@ const Calendar = ({ isOpen }: CalendarType) => {
     useEffect(() => {
         const firstDayOfMonth = getFirstMonthDay(getDayNumber);
         setDate({ ...date, firstDayOfMonth })
-    },[]);
+    }, []);
 
+    // this recursion gets first day (monday, friday) of the month
     const getFirstMonthDay = (currentDay: number) => {
-
         // 18. datums, 6diena - vajag 1. datumu
         // 18-7 = 11 => 11-7 = 4 => 4 < 7 => 4 - 7 => 3diena (strada)
-
-        // 16. datums, 6diena - vajag 1. datumu
-        // 16-7 = 9 => 9-7 = 2 => 2 < 7 => 2 - 7  (1diena) (nestrada)
-
-        // 9.datums 7diena
-        // 7-2 5diena
-        const tempDay = currentDay - 7;
+        const tempDay: number = currentDay - 7;
 
         if (tempDay > 7) {
             getFirstMonthDay(tempDay)
@@ -129,25 +121,85 @@ const Calendar = ({ isOpen }: CalendarType) => {
         if (tempDay === 7) return tempDay;
     };
 
-    const onClickHandler = () => {
+    const prevMonthArr: number[] = [];
 
+    // This gets an array, with last day date numbers of the month for the first row of calendar
+    const getDisplayPrevMonthDays = (firstDay: number, prevMonthDayCount: number, index: number = 1) => {
+
+        if (firstDay === index) return prevMonthArr.reverse();
+
+        prevMonthArr.push(prevMonthDayCount)
+        getDisplayPrevMonthDays(firstDay, prevMonthDayCount - 1, index += 1)
     };
 
-    if (date.firstDayOfMonth) {
-        console.log(date);
-    }
+    // this creates array of arrays of days
+    const createFullMonthView = (firstDay: number, prevMonthDayCount: number, currMonthDayCount: number) => {
+        const daysArray: number[][] = [
+        ];
+
+        for (let i = 0; i < 5; i++) {
+            // first row is different, because we have to add last months last days
+            if (i === 0) {
+                getDisplayPrevMonthDays(firstDay, prevMonthDayCount)
+                daysArray.push([...prevMonthArr])
+                for (let j = 0; j < 7 - prevMonthArr.length; j++) {
+                    daysArray[0]?.push(j + 1);
+                }
+            }
+
+            daysArray.push([]);
+
+            const lastArray = daysArray[i];
+
+            const lastNumber = lastArray?.slice(-1)[0];
+            // console.log(lastNumber)
+
+            for (let j = 1; j < 8; j++) {
+                //checks if last number that is going to be pushed in array, is bigger than
+                // months day count, if so - start pushing next months start dates
+                if (lastNumber! + j > currMonthDayCount) {
+                    for (let index = 1; index < 8 - j + 1; index++) {
+                        daysArray[i + 1]?.push(index);
+                    }
+                    break;
+                }
+                daysArray[i + 1]?.push(lastNumber! + j);
+            }
+        }
+        return daysArray;
+    };
+
+
+    if (!date.firstDayOfMonth) return null;
+
+    // console.log(createFullMonthView(6, 30, 31))
 
     return (
-        <div>
-            <table>
-                <tr>
-                    <td>{'<'}</td>
-                    <td><p>{date.monthString}</p></td>
-                    <td>{'>'}</td>
-                </tr>
-            </table>
+        <div className={styles.container}>
+            <div className={styles.innerContainer}>
+                <div className={styles.header}>
+                    <span>{'<'}</span>
+                    <span>{date.monthString}</span>
+                    <span>{'>'}</span>
+                </div>
+                <div className={styles.dayGrid}>
+                    {createFullMonthView(6, 30, 31).map((data, index) => (
+                        <div className={styles.dayGridColumns} key={`${data}+${index}`}>
+                            {data.map((values) => {
+                                console.log(values)
+                                return (
+                                    <div className={styles.gridElement} key={values}>
+                                        {values}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
+
 };
 
 export default Calendar;
