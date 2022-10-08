@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { object } from 'yup/lib/locale';
 import { array, number } from 'zod';
 import styles from './Calendar.module.css';
 
@@ -59,6 +60,16 @@ const MonthData: ObjectMonthType = {
         dayCount: 31,
     },
 }
+const DaysArray: string[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+];
+
 const DayStringTransl: Record<string, string> = {
     Mon: 'Monday',
     Tue: 'Tuesday',
@@ -77,6 +88,13 @@ type CalendarValuesType = {
     monthString: string,
     year: number,
     firstDayOfMonth?: number | null,
+    prevMonth: string,
+    prevMonthShort: string,
+    prevMonthDayCount: number | null,
+    nextMonth: string,
+    nextMonthShort: string,
+    nextMonthdayCount: number | null,
+    currentMonthDayCount: number | null,
 };
 
 type CalendarType = {
@@ -92,20 +110,16 @@ const Calendar = ({ isOpen }: CalendarType) => {
     // Number() also gets rid of starting zeros
     const getDayNumber: number = Number(getDate.toString().slice(8, 10));
 
-    const [date, setDate] = useState<CalendarValuesType>({
-        weekDay: getDate.getDay(),
-        getDayNumber: getDayNumber,
-        monthNumber: getDate.getMonth(),
-        dayString: DayStringTransl[getStringDay] || '',
-        monthString: MonthData[getStringMonth]?.name || '',
-        year: getDate.getFullYear(),
-        firstDayOfMonth: null,
-    })
+    //get prevMonth index, short and long name, day count
+    const currentMonthIndex: number = Object.keys(MonthData).indexOf(getStringMonth);
+    const prevMonthIndex = (currentMonthIndex - 1 === -1) ? 11 : currentMonthIndex - 1;
+    const nextMonthIndex = (currentMonthIndex + 1 === 12) ? 0 : currentMonthIndex + 1;
 
-    useEffect(() => {
-        const firstDayOfMonth = getFirstMonthDay(getDayNumber);
-        setDate({ ...date, firstDayOfMonth })
-    }, []);
+    const prevMonthShort = Object.keys(MonthData)[prevMonthIndex];
+    const nextMonthShort = Object.keys(MonthData)[nextMonthIndex];
+
+    const nextMonthNameAndDays = MonthData[nextMonthShort!];
+    const prevMonthNameAndDays = MonthData[prevMonthShort!];
 
     // this recursion gets first day (monday, friday) of the month
     const getFirstMonthDay = (currentDay: number) => {
@@ -117,9 +131,28 @@ const Calendar = ({ isOpen }: CalendarType) => {
             getFirstMonthDay(tempDay)
         }
 
-        if (tempDay < 7) return 7 - tempDay;
+        if (tempDay < 7) return 7 - tempDay + 1;
         if (tempDay === 7) return tempDay;
     };
+
+    // set state for everything
+    //get month number is falsy
+    const [date, setDate] = useState<CalendarValuesType>({
+        weekDay: getDate.getDay(),
+        getDayNumber: getDayNumber,
+        monthNumber: getDate.getMonth(),
+        dayString: DayStringTransl[getStringDay] || '',
+        monthString: MonthData[getStringMonth]?.name || '',
+        year: getDate.getFullYear(),
+        firstDayOfMonth: getFirstMonthDay(getDayNumber),
+        currentMonthDayCount: MonthData[getStringMonth]?.dayCount || null,
+        prevMonth: prevMonthNameAndDays?.name || '',
+        prevMonthShort: prevMonthShort || '',
+        prevMonthDayCount: prevMonthNameAndDays?.dayCount || null,
+        nextMonth: nextMonthNameAndDays?.name || '',
+        nextMonthShort: nextMonthShort || '',
+        nextMonthdayCount: nextMonthNameAndDays?.dayCount || null,
+    });
 
     const prevMonthArr: number[] = [];
 
@@ -169,33 +202,104 @@ const Calendar = ({ isOpen }: CalendarType) => {
         return daysArray;
     };
 
+    useEffect(()=>{
+        console.log(date);
+    }, [date])
+    const handleMonthChange = (direction: number) => {
+    //     const currentMonthIndex: number = Object.keys(MonthData).indexOf(getStringMonth);
+    // const prevMonthIndex = (currentMonthIndex - 1 === -1) ? 11 : currentMonthIndex - 1;
+    // const nextMonthIndex = (currentMonthIndex + 1 === 12) ? 0 : currentMonthIndex + 1;
+
+    // const prevMonthShort = Object.keys(MonthData)[prevMonthIndex];
+    // const nextMonthShort = Object.keys(MonthData)[nextMonthIndex];
+
+    // const nextMonthNameAndDays = MonthData[nextMonthShort!];
+    // const prevMonthNameAndDays = MonthData[prevMonthShort!];
+        if (direction === -1) {
+            setDate({
+                ...date,
+                // needs to be inspected
+                getDayNumber: getDayNumber,
+                // done
+                monthNumber: getDate.getMonth() -1,
+                //done
+                dayString: DayStringTransl[date.prevMonthShort] || '',
+                //done
+                monthString: MonthData[date.prevMonthShort]?.name || '',
+                //done
+                currentMonthDayCount: prevMonthNameAndDays?.dayCount || null,
+                // currentMonthDayCount: MonthData[getStringMonth]?.dayCount || null,
+                //done
+                firstDayOfMonth: (getFirstMonthDay(getDayNumber)! -1) === 0 ? 7 : getFirstMonthDay(getDayNumber)! - 1,
+                // prevMonth: prevMonthNameAndDays?.name || '',
+                // prevMonthShort: prevMonthShort || '',
+                // prevMonthDayCount: prevMonthNameAndDays?.dayCount || null,
+                nextMonth: MonthData[date.monthString]?.name || '',
+                nextMonthShort: date.monthString || '',
+                nextMonthdayCount: date.currentMonthDayCount || null,
+            })
+        }
+        // setDate({
+        //     ...date,
+        //     getDayNumber: getDayNumber,
+        //     monthNumber: getDate.getMonth(),
+        //     dayString: DayStringTransl[getStringDay] || '',
+        //     monthString: MonthData[getStringMonth]?.name || '',
+        //     firstDayOfMonth: getFirstMonthDay(getDayNumber),
+        //     currentMonthDayCount: MonthData[getStringMonth]?.dayCount || null,
+        //     prevMonth: prevMonthNameAndDays?.name || '',
+        //     prevMonthShort: prevMonthShort || '',
+        //     prevMonthDayCount: prevMonthNameAndDays?.dayCount || null,
+        //     nextMonth: nextMonthNameAndDays?.name || '',
+        //     nextMonthShort: nextMonthShort || '',
+        //     nextMonthdayCount: nextMonthNameAndDays?.dayCount || null,
+        // })
+    }
 
     if (!date.firstDayOfMonth) return null;
-
-    // console.log(createFullMonthView(6, 30, 31))
 
     return (
         <div className={styles.container}>
             <div className={styles.innerContainer}>
                 <div className={styles.header}>
-                    <span>{'<'}</span>
+                    <button type="button" onClick={() => handleMonthChange(-1)}><span>{'<'}</span></button>
                     <span>{date.monthString}</span>
-                    <span>{'>'}</span>
+                    <button type="button" onClick={() => handleMonthChange(1)}><span>{'>'}</span></button>
                 </div>
-                <div className={styles.dayGrid}>
-                    {createFullMonthView(6, 30, 31).map((data, index) => (
-                        <div className={styles.dayGridColumns} key={`${data}+${index}`}>
-                            {data.map((values) => {
-                                console.log(values)
+                {createFullMonthView(date.firstDayOfMonth, date.prevMonthDayCount!, date.currentMonthDayCount!).map((data, rowIndex) => (
+                    <div className={styles.dayGrid}>
+                        <div className={styles.dayGridColumns} key={`${data}+${rowIndex}`}>
+                            {rowIndex === 0 && (
+                                Object.keys(DayStringTransl).map((day) => (
+                                    <span className={styles.dayName}>{day}</span>
+                                ))
+                            )}
+
+                            {data.map((value) => {
+                                if (rowIndex === 0 && value > 8) {
+                                    return (
+                                        <div className={styles.gridElementNonPrimary} key={value}>
+                                            {value}
+                                        </div>
+                                    );
+                                }
+                                if ((rowIndex === 4 || rowIndex === 5) && value < 20) {
+                                    return (
+                                        <div className={styles.gridElementNonPrimary} key={value}>
+                                            {value}
+                                        </div>
+                                    );
+                                }
                                 return (
-                                    <div className={styles.gridElement} key={values}>
-                                        {values}
+                                    <div className={styles.gridElement} key={value}>
+                                        {value}
                                     </div>
-                                );
+                                )
                             })}
                         </div>
-                    ))}
-                </div>
+                    </div>
+
+                ))}
             </div>
         </div>
     );
