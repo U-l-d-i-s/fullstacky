@@ -86,6 +86,7 @@ type CalendarValuesType = {
     monthNumber: number
     dayString: string,
     monthString: string,
+    monthStringShort: string,
     year: number,
     firstDayOfMonth?: number | null,
     prevMonth: string,
@@ -111,15 +112,56 @@ const Calendar = ({ isOpen }: CalendarType) => {
     const getDayNumber: number = Number(getDate.toString().slice(8, 10));
 
     //get prevMonth index, short and long name, day count
-    const currentMonthIndex: number = Object.keys(MonthData).indexOf(getStringMonth);
-    const prevMonthIndex = (currentMonthIndex - 1 === -1) ? 11 : currentMonthIndex - 1;
-    const nextMonthIndex = (currentMonthIndex + 1 === 12) ? 0 : currentMonthIndex + 1;
+    const getMonthIndex = (StringMonth: string): number => {
+        // const currentMonthIndex: number = Object.keys(MonthData).indexOf(getStringMonthDay().getStringMonth);
+        const currentMonthIndex: number = Object.keys(MonthData).indexOf(StringMonth);
+
+        console.log(currentMonthIndex)
+
+        return currentMonthIndex;
+    };
+
+    const prevMonthIndex = (getMonthIndex(getStringMonth) - 1 <= -1) ? 11 : getMonthIndex(getStringMonth) - 1;
+    const nextMonthIndex = (getMonthIndex(getStringMonth) + 1 >= 12) ? 0 : getMonthIndex(getStringMonth) + 1;
 
     const prevMonthShort = Object.keys(MonthData)[prevMonthIndex];
     const nextMonthShort = Object.keys(MonthData)[nextMonthIndex];
 
-    const nextMonthNameAndDays = MonthData[nextMonthShort!];
-    const prevMonthNameAndDays = MonthData[prevMonthShort!];
+    const getNextPrevMonthIndex: (StringMonth: string) => {
+        prevMonthIdx: string,
+        nextMonthIdx: string,
+    } = (
+        StringMonth: string
+    ) => {
+            const currMonthIndex = getMonthIndex(StringMonth);
+
+            const indexNext = (currMonthIndex + 1 === 12) ? 0 : currMonthIndex + 1;
+            const indexPrev = (currMonthIndex - 1 <= -1) ? 11 : currMonthIndex - 1;
+
+            const nextMonthIndex: string = Object.keys(MonthData)[indexNext]!;
+            const prevMonthIndex: string = Object.keys(MonthData)[indexPrev]!;
+
+            return {
+                prevMonthIdx: prevMonthIndex,
+                nextMonthIdx: nextMonthIndex,
+            }
+        };
+
+    const prevMonthNameAndDays = (MonthName: string) => {
+        const prevMonthNameAndDays = MonthData[MonthName];
+        return {
+            dayCount: prevMonthNameAndDays?.dayCount,
+            name: prevMonthNameAndDays?.name,
+        }
+    };
+
+    const nextMonthNameAndDays = (MonthName: string) => {
+        const nextMonthNameAndDays = MonthData[MonthName];
+        return {
+            dayCount: nextMonthNameAndDays?.dayCount,
+            name: nextMonthNameAndDays?.name,
+        }
+    };
 
     // this recursion gets first day (monday, friday) of the month
     const getFirstMonthDay = (currentDay: number) => {
@@ -143,40 +185,51 @@ const Calendar = ({ isOpen }: CalendarType) => {
         monthNumber: getDate.getMonth(),
         dayString: DayStringTransl[getStringDay] || '',
         monthString: MonthData[getStringMonth]?.name || '',
+        monthStringShort: getStringMonth,
         year: getDate.getFullYear(),
         firstDayOfMonth: getFirstMonthDay(getDayNumber),
         currentMonthDayCount: MonthData[getStringMonth]?.dayCount || null,
-        prevMonth: prevMonthNameAndDays?.name || '',
+        prevMonth: prevMonthNameAndDays(prevMonthShort!).name || '',
         prevMonthShort: prevMonthShort || '',
-        prevMonthDayCount: prevMonthNameAndDays?.dayCount || null,
-        nextMonth: nextMonthNameAndDays?.name || '',
+        prevMonthDayCount: prevMonthNameAndDays(prevMonthShort!).dayCount || null,
+        nextMonth: nextMonthNameAndDays(nextMonthShort!).name || '',
         nextMonthShort: nextMonthShort || '',
-        nextMonthdayCount: nextMonthNameAndDays?.dayCount || null,
+        nextMonthdayCount: nextMonthNameAndDays(nextMonthShort!).dayCount || null,
     });
 
+    // This gets an array, with last day date numbers of the month for the first row of calendar
     const prevMonthArr: number[] = [];
 
-    // This gets an array, with last day date numbers of the month for the first row of calendar
-    const getDisplayPrevMonthDays = (firstDay: number, prevMonthDayCount: number, index: number = 1) => {
+    const getDisplayPrevMonthDays = (
+        firstDay: number,
+        prevMonthDayCount: number,
+        index: number = 1,
+        tempArr: number[] = [],
+    ) => {
+        // return array
+        if (firstDay === index) {
+            tempArr.reverse();
+            prevMonthArr.push(...tempArr);
+            return;
+        };
 
-        if (firstDay === index) return prevMonthArr.reverse();
-
-        prevMonthArr.push(prevMonthDayCount)
-        getDisplayPrevMonthDays(firstDay, prevMonthDayCount - 1, index += 1)
+        tempArr.push(prevMonthDayCount)
+        getDisplayPrevMonthDays(firstDay, prevMonthDayCount - 1, index += 1, tempArr);
     };
 
     // this creates array of arrays of days
     const createFullMonthView = (firstDay: number, prevMonthDayCount: number, currMonthDayCount: number) => {
-        const daysArray: number[][] = [
-        ];
+        const daysArray: number[][] = [];
 
         for (let i = 0; i < 5; i++) {
             // first row is different, because we have to add last months last days
             if (i === 0) {
                 getDisplayPrevMonthDays(firstDay, prevMonthDayCount)
-                daysArray.push([...prevMonthArr])
-                for (let j = 0; j < 7 - prevMonthArr.length; j++) {
-                    daysArray[0]?.push(j + 1);
+                if (prevMonthArr) {
+                    daysArray.push([...prevMonthArr])
+                    for (let j = 0; j < 7 - prevMonthArr.length; j++) {
+                        daysArray[0]?.push(j + 1);
+                    }
                 }
             }
 
@@ -202,40 +255,43 @@ const Calendar = ({ isOpen }: CalendarType) => {
         return daysArray;
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(date);
+        console.log(date.firstDayOfMonth, date.prevMonthDayCount!, date.currentMonthDayCount!);
     }, [date])
     const handleMonthChange = (direction: number) => {
-    //     const currentMonthIndex: number = Object.keys(MonthData).indexOf(getStringMonth);
-    // const prevMonthIndex = (currentMonthIndex - 1 === -1) ? 11 : currentMonthIndex - 1;
-    // const nextMonthIndex = (currentMonthIndex + 1 === 12) ? 0 : currentMonthIndex + 1;
+        console.log('here');
 
-    // const prevMonthShort = Object.keys(MonthData)[prevMonthIndex];
-    // const nextMonthShort = Object.keys(MonthData)[nextMonthIndex];
-
-    // const nextMonthNameAndDays = MonthData[nextMonthShort!];
-    // const prevMonthNameAndDays = MonthData[prevMonthShort!];
         if (direction === -1) {
             setDate({
                 ...date,
                 // needs to be inspected
                 getDayNumber: getDayNumber,
                 // done
-                monthNumber: getDate.getMonth() -1,
+                monthNumber: getDate.getMonth() - 1,
                 //done
                 dayString: DayStringTransl[date.prevMonthShort] || '',
                 //done
                 monthString: MonthData[date.prevMonthShort]?.name || '',
+
+                monthStringShort: date.prevMonthShort,
                 //done
-                currentMonthDayCount: prevMonthNameAndDays?.dayCount || null,
+                currentMonthDayCount: date.prevMonthDayCount || null,
                 // currentMonthDayCount: MonthData[getStringMonth]?.dayCount || null,
                 //done
-                firstDayOfMonth: (getFirstMonthDay(getDayNumber)! -1) === 0 ? 7 : getFirstMonthDay(getDayNumber)! - 1,
-                // prevMonth: prevMonthNameAndDays?.name || '',
-                // prevMonthShort: prevMonthShort || '',
-                // prevMonthDayCount: prevMonthNameAndDays?.dayCount || null,
-                nextMonth: MonthData[date.monthString]?.name || '',
-                nextMonthShort: date.monthString || '',
+                firstDayOfMonth: (date.firstDayOfMonth! + (date.currentMonthDayCount! - date.prevMonthDayCount! - 3)) <= 0 ? 7 + date.firstDayOfMonth! + (date.currentMonthDayCount! - date.prevMonthDayCount! - 3) : date.firstDayOfMonth! + (date.currentMonthDayCount! - date.prevMonthDayCount! - 3),
+
+                //done
+                prevMonth: MonthData[getNextPrevMonthIndex(date.prevMonthShort!).prevMonthIdx]?.name!,
+                //done
+                prevMonthShort: Object.keys(MonthData)[(getMonthIndex(date.prevMonthShort)-1 <= -1) ? 11 : getMonthIndex(date.prevMonthShort) - 1]!,
+                //done
+                prevMonthDayCount: MonthData[getNextPrevMonthIndex(date.prevMonthShort!).prevMonthIdx]?.dayCount || null,
+                //done
+                nextMonth: date.monthString || '',
+                //done
+                nextMonthShort: date.monthStringShort || '',
+                //done
                 nextMonthdayCount: date.currentMonthDayCount || null,
             })
         }
