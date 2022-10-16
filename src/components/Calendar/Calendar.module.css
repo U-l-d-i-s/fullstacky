@@ -55,6 +55,8 @@
     font-weight: 100;
 }
 .gridElement{
+    position: relative;
+
     border: 1px solid #353a3c;
     border-radius: 3px;
 
@@ -76,6 +78,8 @@
 }
 
 .gridElementNonPrimary{
+    position: relative;
+    
     border: 1px solid #353a3c;
     border-radius: 3px;
 
@@ -97,4 +101,13 @@
     background-color: #353a3c;
     
     transition: background-color opacity 0.1s;
+}
+
+.inpButton{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: pointer;
 }

@@ -47,7 +47,9 @@ const NewWorkoutView = () => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <p>when:</p>
-                <Calendar isOpen={true}/>
+                <Calendar 
+                    isOpen={true}
+                />
                 <h1>Workout Plan:</h1>
 
                 <SingleInputField<NewWorkoutPlanValues>
