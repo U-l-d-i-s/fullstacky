@@ -3,11 +3,26 @@
 }
 
 .container{
-    width: 90%;
+    max-width: 800px;
 
     margin: auto;
+    padding-top: 50px;
 }
 
 .form{
     width: 100%;
+
+    display: grid;
+    grid-template-columns: 345px 1fr;
+    gap: 30px;
+}
+
+.time{
+    display: grid;
+    grid-template-columns: 250px 60px;
+    gap: 30px;
+
+    height: 300px;
+    padding-top: 20px;
+    padding-bottom: 30px;
 }

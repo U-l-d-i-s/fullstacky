@@ -76,7 +76,11 @@ const PersonalSettings = () => {
     return (    
         <div className={styles.container}>
             {/* align left */}
+            <div className={styles.titles}>
             <h1>Personal Settings</h1>
+            <h1>Bank Details</h1>
+            <h1>Account Settings</h1>
+            </div>
             <div className={styles.innerContainer}>
                 <form
                     onSubmit={handleSubmit(onSubmit)}

@@ -2,18 +2,20 @@
     max-width: 85%;
 
     display: flex;
-    align-items: center;
+    align-items: left;
     justify-content: center;
     flex-direction: column;
 
     margin: auto;
-    padding-top: 50px;
 
     text-align: left;
+    padding: 17px;
+
+    
 }
 
 .container h1 {
-    align-self: left;
+    
     margin-left: 0;
 }
 
@@ -23,11 +25,17 @@
 
 .row {
     min-width: 50%;
-
-    padding: 17px;
-
+    text-align: left;
     /* float: left; */
     justify-content: center;
     align-items: center;
+}
+
+.titles{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 500px;
 }
 
