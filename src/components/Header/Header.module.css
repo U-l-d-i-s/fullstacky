@@ -1,8 +1,10 @@
 .container{
-    width: 100%;
+    width: 500px;
     height: 45px;
-    position: static;
-    background-color: rgb(247, 245, 245);
+    position: fixed;
+    /* background-color: #1F2833; */
+    top: 0;
+    right: 0;
 }
 
 .innerContainer{
@@ -20,11 +22,11 @@
 
 .innerContainer p {
     font-size: 20px;
-    color: black;
+    color: #0B0C10;
 }
 
 .circle {
-    background-color: rgb(126, 121, 121);
+    background-color: #C5C6C7;
     border-radius: 50%;
     width: 35px;
     height: 35px;

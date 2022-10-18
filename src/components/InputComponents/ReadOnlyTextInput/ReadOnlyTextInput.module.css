@@ -2,10 +2,13 @@
     height: 40px;
     width: 100%;
     border-width: 2px;
-    border-color: bisque;
-    border-radius: 4px;
+    border-color: #66FCF1;
+    border-radius: 5px;
+
+    margin-bottom: 15px;
+    padding-left: 10px;
 }
 
 .input:hover{
-    border-color: rgb(244, 188, 119);
+    border-color: #45A29E;
 }

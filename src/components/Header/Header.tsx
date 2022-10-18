@@ -8,8 +8,9 @@ const Header = () => {
     const [isMenuOpen, setMenuOpen] = useState<boolean>(false);
     const { data: session } = useSession()
     const [group, setGroup] = useState();
+
     const circleStyle = {
-        backgroundColor: "red",
+        backgroundColor: '#66FCF1',
     }
 
     const getInitials = useMemo(() => {
@@ -19,24 +20,19 @@ const Header = () => {
     return (
         <div className={styles.container}>
             <div className={styles.innerContainer}>
-
-                <Link href="">
-                    <p>WorkOut Plan</p>
+            <Link href="">
+                    <h1>WorkOut Plan</h1>
                 </Link>
 
                 <Link href="/afterLogin/NewWorkout">
-                    <p>New Workout</p>
+                    <h1>New Workout</h1>
                 </Link>
 
                 {group && (
                     <Link href="">
-                        <p>Group Results</p>
+                        <h1>Group Results</h1>
                     </Link>
                 )}
-
-                <Link href="">
-                    <p>WhiteBoard</p>
-                </Link>
 
                 <button
                     onClick={() => setMenuOpen(!isMenuOpen)}
@@ -49,7 +45,10 @@ const Header = () => {
                         <p style={{ fontSize: '15px' }}>Uk</p>
                     )}
                     {!isMenuOpen ? null : (
-                        <MenuDropDown userName={session?.user?.name} />
+                        <MenuDropDown 
+                        userName={session?.user?.name} 
+                        group={group}
+                        />
                     )}
                 </button>
             </div>

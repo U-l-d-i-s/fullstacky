@@ -6,6 +6,9 @@
     border-radius: 5px;
 
     padding: 8px;
+
+    box-shadow:  0 0 0 2px rgb(255, 255, 255),
+    0.3em 0.3em 1em rgba(255, 255, 255, 0.3);
 }
 .innerContainer{
     width: 100%;
@@ -43,7 +46,6 @@
 .dayGridColumns{
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /* grid-template-rows: repeat(1, 27px); */
     margin: 3px;
     gap: 3px;
     text-align: center;
@@ -53,61 +55,4 @@
     color: seashell;
     font-size: 12px;
     font-weight: 100;
-}
-.gridElement{
-    position: relative;
-
-    border: 1px solid #353a3c;
-    border-radius: 3px;
-
-    background-color: #262829;
-    color: seashell;
-
-    transition: background-color 0.1s;
-
-    font-size: 15px;
-    line-height: 24px;
-    font-weight: 400;
-}
-
-.gridElement:hover{
-    border: 1px solid seashell;
-    background-color: #353a3c;
-    
-    transition: background-color 0.1s;
-}
-
-.gridElementNonPrimary{
-    position: relative;
-    
-    border: 1px solid #353a3c;
-    border-radius: 3px;
-
-    background-color: #262829;
-    color: seashell;
-
-    transition: background-color opacity 0.1s;
-
-    font-size: 15px;
-    line-height: 24px;
-    font-weight: 400;
-
-    opacity: 0.3;
-}
-
-.gridElementNonPrimary:hover{
-    opacity: 0.7;
-    border: 1px solid rgb(145, 144, 143);
-    background-color: #353a3c;
-    
-    transition: background-color opacity 0.1s;
-}
-
-.inpButton{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    cursor: pointer;
 }

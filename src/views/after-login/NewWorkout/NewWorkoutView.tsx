@@ -2,9 +2,9 @@ import CheckBox from "@/components/InputComponents/CheckBox/CheckBox";
 import SingleInputField from "@/components/InputComponents/SingleInputField/SingleInputField";
 import SubmitButton from "@/components/InputComponents/SubmitButton/SubmitButton";
 import { SubmitHandler, useForm } from "react-hook-form";
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import Calendar from "@/components/Calendar/Calendar";
+
+import styles from './NewWorkoutView.module.css';
 
 type Intensity = {
     hard: string,
@@ -42,13 +42,15 @@ const NewWorkoutView = () => {
     }
     
     return (
-        <div>
+        <div className={styles.container}>
             <form 
                 onSubmit={handleSubmit(onSubmit)}
+                className={styles.form}
             >
-                <p>when:</p>
+                <h1 className={styles.title}>When:</h1>
                 <Calendar 
                     isOpen={true}
+                    selectSingleDay={true}
                 />
                 <h1>Workout Plan:</h1>
 
@@ -66,7 +68,7 @@ const NewWorkoutView = () => {
                     />
                     <div>
                         <h3>
-                            Intensity
+                            Intensity:
                         </h3>
 
                         <CheckBox
@@ -90,20 +92,6 @@ const NewWorkoutView = () => {
                             type="radio"
                             value="easy"
                         />
-                        {/* <label htmlFor="">
-                        Hard
-                        <input type="checkbox" placeholder="Hard" />
-                    </label>
-
-                    <label htmlFor="">
-                        Medium
-                        <input type="checkbox" placeholder="Medium" />
-                    </label>
-
-                    <label htmlFor="Easy">
-                        Easy
-                        <input id="Easy" type="checkbox" placeholder="Easy" />
-                    </label> */}
                     </div>
                     <SingleInputField<NewWorkoutPlanValues>
                         placeholder="Sets"
@@ -126,7 +114,7 @@ const NewWorkoutView = () => {
                 <SubmitButton />
 
             </form>
-            <div>display workout plan</div>
+            <div className={styles.displayWorkout}>display workout plan</div>
 
         </div>
     );

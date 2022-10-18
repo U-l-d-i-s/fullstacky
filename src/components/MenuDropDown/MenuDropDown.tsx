@@ -6,8 +6,9 @@ import styles from './MenuDropDown.module.css'
 
 type MenuDropDownProps = {
     userName?: string | null,
+    group?: boolean,
 };
-const MenuDropDown = ({ userName }: MenuDropDownProps) => {
+const MenuDropDown = ({ userName, group }: MenuDropDownProps) => {
     const { status } = useSession()
     const router = useRouter();
 
@@ -41,15 +42,12 @@ const MenuDropDown = ({ userName }: MenuDropDownProps) => {
         <div
             className={styles.menuDropDown}
         >
-            <h3>Signed in as <span >{userName}</span></h3>
-
-            <hr className={styles.horizontalLine}/>
+            <h2><span style={{color: 'white'}}>Signed in as</span> <span >{userName}</span></h2>
+            
+            <hr style={{color: 'white'}} className={styles.horizontalLine}/>
 
             <ActionLinkButton>
-                <p>ToC</p>
-            </ActionLinkButton>
-            <ActionLinkButton>
-                <p>Page Theme</p>
+                <p style={{color: 'white'}}>Page Theme</p>
             </ActionLinkButton>
 
             <hr className={styles.horizontalLine}/>
@@ -60,19 +58,22 @@ const MenuDropDown = ({ userName }: MenuDropDownProps) => {
                         onClick={onClickProfileSettings}
                         href="/afterLogin/profileSettings"
                     >
-                        <p>Profile Settings</p>
+                        <p style={{color: 'white'}}>Profile Settings</p>
                     </Link>
+                    
+                    <hr className={styles.horizontalLine}/>
+
                     <ActionLinkButton
                         onClick={handleSignOut}
                     >
-                        <p>Log Out</p>
+                        <p style={{color: 'white'}}>Log Out</p>
                     </ActionLinkButton>
                 </div>
             ) : (
                 <ActionLinkButton
                     onClick={handleSignIn}
                 >
-                    <p>Sign in</p>
+                    <p style={{color: 'white'}}>Sign in</p>
                 </ActionLinkButton>
             )}
         </div>

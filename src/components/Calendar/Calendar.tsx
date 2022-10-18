@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './Calendar.module.css';
+import Day from './CalendarTools/Day';
 
 // TODO: create constant list of [Jan, Feb...] for [keys: MonthConstantList]
 type ObjectMonthType = {
@@ -100,10 +101,11 @@ type CalendarValuesType = {
 
 type CalendarType = {
     isOpen: boolean,
+    selectSingleDay: boolean,
 };
 
 // @TODO: Make calendar views dates selectable, use react-Form-Hook or smth
-const Calendar = ({ isOpen }: CalendarType) => {
+const Calendar = ({ isOpen, selectSingleDay }: CalendarType) => {
     const getDate = new Date();
     const getCurrentWeekDay = getDate.getDay();
     // gets First values for todays date
@@ -390,9 +392,23 @@ const Calendar = ({ isOpen }: CalendarType) => {
         }
     }
 
-    const handleCalendarDayClick = (clickedDay: number) => {
+    const handleCalendarDayClick = (clickedDay: number, pressedDateMonth: number) => {
         console.log(clickedDay);
-        if (!selectedDateRange.start.day) setSelectedDateRange({ ...selectedDateRange, start: { day: clickedDay, month: 5 } });
+        // you cant select prev month for workout
+        if(pressedDateMonth < date.monthNumber) return;
+
+        // if selectSingleDay prop is true, select only one, without range. If it is selected and
+        // another select is made, select next day 
+        if (selectSingleDay && (pressedDateMonth === date.monthNumber || pressedDateMonth === date.monthNumber+1)) {
+            if (pressedDateMonth === date.monthNumber) {
+                setSelectedDateRange({ ...selectedDateRange, start: { day: clickedDay, month: date.monthNumber } });
+            }
+            if (pressedDateMonth === date.monthNumber+1) {
+                setSelectedDateRange({ ...selectedDateRange, start: { day: clickedDay, month: date.monthNumber + 1 } });
+            }
+            return;
+        }
+        if (!selectedDateRange.start.day) setSelectedDateRange({ ...selectedDateRange, start: { day: clickedDay, month: date.monthNumber } });
 
         // reverse dates, if finish date bigger than start date
         if (!selectedDateRange.finish.day) {
@@ -402,25 +418,24 @@ const Calendar = ({ isOpen }: CalendarType) => {
             setSelectedDateRange({ ...selectedDateRange, finish: { month: 3, day: clickedDay } })
         }
         if (selectedDateRange.finish.day && selectedDateRange.start.day) {
-            setSelectedDateRange({ 
-                start: { month: null, day: null }, 
-                finish: { month: null, day: null } 
+            setSelectedDateRange({
+                start: { month: null, day: null },
+                finish: { month: null, day: null }
             })
         }
     };
 
-    const inRangeStyling = {
-        backgroundColor: 'yellow'
+    const selectStyling = (position: number, monthPosition: number) => {
+        if(monthPosition < date.monthNumber) return;
 
-    };
-
-    const selectStyling = (position: number) => {
-        if (selectedDateRange.start.day === position || selectedDateRange.finish.day === position) {
+        if ((selectedDateRange.start.day === position || selectedDateRange.finish.day === position)) {
             return {
                 backgroundColor: 'green',
                 color: '#262829',
             }
         }
+
+        // needs changes probably
         if ((selectedDateRange.start.day && selectedDateRange.start.day > position)
             && (selectedDateRange.finish.day && selectedDateRange.finish.day < position)) {
             return {
@@ -452,42 +467,43 @@ const Calendar = ({ isOpen }: CalendarType) => {
                             {data.map((value) => {
                                 if (rowIndex === 0 && value > 8) {
                                     return (
-                                        <div
-                                            className={styles.gridElementNonPrimary}
+                                        <Day
                                             key={value}
-                                            style={selectStyling(value)}
-                                        >
-                                            <input className={styles.inpButton} type="button" onClick={() => console.log(value)} />
-                                            {value}
-                                        </div>
+                                            nonPrimary
+                                            handleCalendarDayClick={handleCalendarDayClick}
+                                            value={value}
+                                            monthNumber={date.monthNumber-1}
+                                            actualMonthNumber={date.monthNumber}
+                                            selectStyling={selectStyling}
+                                        />
                                     );
                                 }
                                 if ((rowIndex === 4 || rowIndex === 5) && value < 20) {
                                     return (
-                                        <div
-                                            className={styles.gridElementNonPrimary}
+                                        <Day
                                             key={value}
-                                            style={selectStyling(value)}
-                                        >
-                                            <input className={styles.inpButton} type="button" onClick={() => console.log(value)} />
-                                            {value}
-                                        </div>
+                                            nonPrimary
+                                            handleCalendarDayClick={handleCalendarDayClick}
+                                            value={value}
+                                            selectStyling={selectStyling}
+                                            monthNumber={date.monthNumber+1}
+                                            actualMonthNumber={date.monthNumber}
+                                        />
                                     );
                                 }
                                 return (
-                                    <div
-                                        className={styles.gridElement}
+                                    <Day
                                         key={value}
-                                        style={selectStyling(value)}
-                                    >
-                                        <input className={styles.inpButton} type="button" onClick={() => handleCalendarDayClick(value)} />
-                                        {value}
-                                    </div>
+                                        handleCalendarDayClick={handleCalendarDayClick}
+                                        value={value}
+                                        selectStyling={selectStyling}
+                                        monthNumber={date.monthNumber}
+                                        actualMonthNumber={date.monthNumber}
+                                    />
                                 )
                             })}
                         </div>
                     </div>
-
                 ))}
             </div>
         </div>

@@ -1,0 +1,63 @@
+.container{
+    width: 350px;
+    height: 55px;
+
+    background-color: rgba(197, 198, 199, 0.95);
+    border-radius: 7px;
+    border: 2px solid #66FCF1;
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    position: fixed;
+    bottom: 20px;
+
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.smallCalendar{
+    position: relative;
+
+    height: 40px;
+    width: 48px;
+
+    border: 2px solid #45A29E;
+
+    border-radius: 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items:flex-end;
+
+    background-color: white;
+    padding: 2px;
+}
+.circle{
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    background-color: white;
+    border: 1px solid #66FCF1;
+}
+
+.circle p{
+    font-weight: 200;
+    color: #454545;
+
+    font-size: medium;
+    text-align: center;
+    line-height: 22px;
+}
+
+.hr{
+    height: 1px;
+    width: 48px;
+    background-color: #45A29E;
+
+    position: absolute;
+    top: 7px
+}

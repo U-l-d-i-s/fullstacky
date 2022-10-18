@@ -1,6 +1,14 @@
 .container{
-    height: 100%;
+    height: auto;
     width: 100%;
 
-    background-color: #e9e9e9;
+    background-color: #1F2833;
+
+    position: relative;
+
+    padding: 20px;
+}
+
+.dummyViewExtend{
+    height: 80px;
 }
